@@ -1,4 +1,112 @@
-# ----- K MEANS ------ #
+import numpy as np
+import librosa
+import torch
+from MusicBoundariesCNN.boundariesdetectioncnn import configs 
+
+# Load the trained model
+model = configs.load_model('mel')
+
+# Preprocess the audio to obtain the spectrogram representation
+audio_path = 'C:/Dev/git/testbuildw/songSectionDetection/nir.mp3'  # Path to the audio file
+audio, sr = librosa.load(audio_path, sr=22050)  # Load the audio file
+
+# Apply audio preprocessing using librosa
+spectrogram = librosa.feature.melspectrogram(y=audio, sr=sr)
+
+# Convert the spectrogram to a PyTorch tensor
+spectrogram_tensor = torch.from_numpy(spectrogram[np.newaxis, np.newaxis, :, :]).float()
+
+# Pass the spectrogram through the model to obtain the predicted section boundaries
+with torch.no_grad():
+    predicted_boundaries = model(spectrogram_tensor)
+    predicted_boundaries = predicted_boundaries.squeeze().numpy()
+
+# Postprocess the predicted boundaries (You may need to customize this part)
+section_boundaries = predicted_boundaries
+
+# Print the section boundaries
+for section in section_boundaries:
+    start_time = section[0]  # Start time of the section in seconds
+    end_time = section[1]  # End time of the section in seconds
+    print(f"Section: {start_time:.2f} - {end_time:.2f} seconds")
+
+
+
+# from __future__ import print_function
+# import msaf
+# import math
+# import msaf
+# import yaml
+
+# # Select audio file
+# audio_file = "C:/Dev/git/testbuildw/songSectionDetection/nir.mp3"
+
+# # Load the default configuration file
+# config_file = msaf.config.get_default_config_file()
+
+# # Modify the hop size parameter in the configuration file
+# with open(config_file, 'r') as f:
+#     config = yaml.safe_load(f)
+# config['ffeat']['hop_size'] = 512  # Adjust the hop size
+
+# # Save the modified configuration file
+# new_config_file = "my_config.yaml"
+# with open(new_config_file, 'w') as f:
+#     yaml.dump(config, f)
+
+# # Segment the file using the modified configuration file
+# boundaries, labels = msaf.process(audio_file, config_file=new_config_file)
+# print('Estimated boundaries:', boundaries)
+
+# # Convert boundaries to intervals and print the section boundaries
+# sections = msaf.utils.boundaries_to_intervals(boundaries)
+# for i, section in enumerate(sections):
+#     start_timestamp = msaf.utils.time_to_str(section[0])
+#     end_timestamp = msaf.utils.time_to_str(section[1])
+#     print(f"Section {i+1}: {start_timestamp} - {end_timestamp}")
+
+    
+# import librosa
+# import numpy as np
+
+# def detect_song_sections(mp3_file_path):
+#     # Load the audio file
+#     audio_data, sr = librosa.load(mp3_file_path)
+
+#     # Convert audio to mono
+#     audio_data_mono = librosa.to_mono(audio_data)
+
+#     # Compute the onset strength envelope
+#     onset_env = librosa.onset.onset_strength(y=audio_data_mono, sr=sr)
+
+#     # Set the hop length based on the frame rate
+#     hop_length = int(sr / 100)
+
+#     # Find the tempo and beat frames
+#     tempo, beat_frames = librosa.beat.beat_track(y=audio_data_mono, sr=sr, hop_length=hop_length)
+
+#     # Calculate the section starts based on onset strength
+#     section_starts = librosa.onset.onset_detect(onset_envelope=onset_env, backtrack=False)
+
+#     # Calculate the section end frames
+#     section_ends = np.append(section_starts[1:], len(onset_env))
+
+#     # Convert frame indices to timestamps
+#     section_start_times = librosa.frames_to_time(section_starts, sr=sr)
+#     section_end_times = librosa.frames_to_time(section_ends, sr=sr)
+
+#     # Print the section timestamps
+#     for i, (section_start, section_end) in enumerate(zip(section_start_times, section_end_times)):
+#         print(f"Section {i+1}: {section_start:.2f} - {section_end:.2f}")
+
+#     # Print the tempo
+#     print(f"Tempo: {tempo:.2f} BPM")
+
+# detect_song_sections(mp3_file_path)
+
+
+
+#----- K MEANS ------ #
 
 # import numpy as np
 # import librosa
@@ -31,7 +139,7 @@
 
 #     # Perform change point detection using Pelt algorithm
 #     model = rpt.Pelt().fit(features_pca)
-#     change_points = model.predict(pen=300)  # Adjust the pen value to change the threshold criteria
+#     change_points = model.predict(pen=1200)  # Adjust the pen value to change the threshold criteria
 
 #     # Convert change point indices to timestamps
 #     timestamps = librosa.frames_to_time(change_points, sr=sr)
@@ -47,47 +155,55 @@
 #         print(f"Section {i+1}: {start_minutes:02d}:{start_seconds:02d} - {end_minutes:02d}:{end_seconds:02d}")
 
 
+# mp3_file_path = "C:/Dev/git/testbuildw/songSectionDetection/nir.mp3"
+
 # # Specify the path to your MP3 file
-# mp3_file_path = "C:/Dev/git/testbuildw/songSectionDetection/rhcp.mp3"
+# # mp3_file_path = "C:/Dev/git/testbuildw/songSectionDetection/rhcp.mp3"
 
 # # Perform audio segmentation
 # audio_segmentation(mp3_file_path)
 
 
 
-# Specify the path to your MP3 file
-# mp3_file_path = "C:/Dev/git/testbuildw/songSectionDetection/nir.mp3"
+#Specify the path to your MP3 file
 
 # ----- DBSCAN ---- #
-import librosa
+# import librosa
 
-def audio_segmentation(mp3_file_path):
-    # Load audio file
-    audio_data, sr = librosa.load(mp3_file_path)
+# def audio_segmentation(mp3_file_path):
+#     # Load audio file
+#     audio_data, sr = librosa.load(mp3_file_path)
 
-    # Perform onset detection
-    onset_frames = librosa.onset.onset_detect(y=audio_data, sr=sr)
+#     # Downsample the audio to a lower sampling rate
+#     target_sr = 22050  # Desired sampling rate
+#     audio_data = librosa.resample(audio_data, orig_sr=sr, target_sr=target_sr)
 
-    # Convert onset frames to timestamps
-    timestamps = librosa.frames_to_time(onset_frames, sr=sr)
+#     # Compute the recurrence matrix
+#     recurrence_matrix = librosa.segment.recurrence_matrix(audio_data)
 
-    # Perform energy-based segmentation
-    energy = librosa.feature.rmse(y=audio_data)
-    energy_threshold = 0.02 * max(energy)
-    segment_boundaries = [timestamps[0]]
-    for i in range(1, len(timestamps)):
-        if (energy[0, onset_frames[i-1]] > energy_threshold) and (energy[0, onset_frames[i]] <= energy_threshold):
-            segment_boundaries.append(timestamps[i])
+#     # Set the minimum segment duration (in seconds)
+#     min_segment_duration = 3
 
-    # Print the sections
-    print("Song Sections:")
-    for i in range(len(segment_boundaries) - 1):
-        section_start = segment_boundaries[i]
-        section_end = segment_boundaries[i + 1]
-        print(f"Section {i + 1}: {section_start:.2f}s - {section_end:.2f}s")
+#     # Perform segmentation based on the recurrence matrix
+#     sections = librosa.segment.agglomerative(recurrence_matrix, k=10)
 
-# Specify the path to your MP3 file
-mp3_file_path = "C:/Dev/git/testbuildw/songSectionDetection/nir.mp3"
+#     # Convert section indices to timestamps
+#     timestamps = librosa.frames_to_time(sections, sr=target_sr)
 
-# Perform audio segmentation using onset detection and energy-based segmentation
-audio_segmentation(mp3_file_path)
+#     # Filter out short sections
+#     timestamps_filtered = [timestamps[i] for i in range(len(timestamps) - 1) if (timestamps[i + 1] - timestamps[i]) >= min_segment_duration]
+#     timestamps_filtered.append(timestamps[-1])
+
+#     # Print the sections
+#     print("Song Sections:")
+#     for i in range(len(timestamps_filtered) - 1):
+#         section_start = timestamps_filtered[i]
+#         section_end = timestamps_filtered[i + 1]
+#         print(f"Section {i + 1}: {section_start:.2f}s - {section_end:.2f}s")
+
+# # Specify the path to your MP3 file
+# mp3_file_path = "C:/Dev/git/testbuildw/songSectionDetection/nir.mp3"
+
+# # Perform audio segmentation based on repeated patterns
+# audio_segmentation(mp3_file_path)
+
