@@ -1,0 +1,60 @@
+LICENSE
+README.md
+setup.py
+boundariesdetectioncnn/__init__.py
+boundariesdetectioncnn/configs.py
+boundariesdetectioncnn/data/SSLagM_1 song_chromas.py
+boundariesdetectioncnn/data/SSLagM_1 song_chromas_cosine.py
+boundariesdetectioncnn/data/SSLagM_1 song_chromas_euclidean.py
+boundariesdetectioncnn/data/SSLagM_1 song_mfccs_cosine.py
+boundariesdetectioncnn/data/SSLagM_1 song_mfccs_euclidean.py
+boundariesdetectioncnn/data/SSLagM_all_songs_chromas_cosine.py
+boundariesdetectioncnn/data/SSLagM_all_songs_chromas_euclidean.py
+boundariesdetectioncnn/data/SSLagM_all_songs_mfccs_cosine.py
+boundariesdetectioncnn/data/SSLagM_all_songs_mfccs_euclidean.py
+boundariesdetectioncnn/data/SSM_1_song_mfccs.py
+boundariesdetectioncnn/data/SSM_all_songs_mfccs.py
+boundariesdetectioncnn/data/__init__.py
+boundariesdetectioncnn/data/check_no_NaNs_in_sslms.py
+boundariesdetectioncnn/data/check_sslm_mfccs_chromas_dimensions.py
+boundariesdetectioncnn/data/dataloaders.py
+boundariesdetectioncnn/data/extract_labels_from_txt.py
+boundariesdetectioncnn/data/noise.py
+boundariesdetectioncnn/data/normalize_image.py
+boundariesdetectioncnn/data/pink_noise.py
+boundariesdetectioncnn/data/split_dataset.py
+boundariesdetectioncnn/evaluation/__init__.py
+boundariesdetectioncnn/evaluation/test_1_song_MLS.py
+boundariesdetectioncnn/evaluation/test_1_song_MLS_SSLM.py
+boundariesdetectioncnn/evaluation/test_1_song_MLS_SSLM_SSLM.py
+boundariesdetectioncnn/evaluation/test_1_song_SSLM.py
+boundariesdetectioncnn/evaluation/test_all_songs_MLS.py
+boundariesdetectioncnn/evaluation/test_all_songs_MLS_4SSLM.py
+boundariesdetectioncnn/evaluation/test_all_songs_MLS_SSLM.py
+boundariesdetectioncnn/evaluation/test_all_songs_MLS_SSLM_SSLM.py
+boundariesdetectioncnn/evaluation/test_all_songs_SSLM.py
+boundariesdetectioncnn/evaluation/threshold.py
+boundariesdetectioncnn/models/__init__.py
+boundariesdetectioncnn/models/model_CNN_MLS.py
+boundariesdetectioncnn/models/model_CNN_MLS_4SSLM.py
+boundariesdetectioncnn/models/model_CNN_MLS_SSLM.py
+boundariesdetectioncnn/models/model_CNN_MLS_SSLM_SSLM.py
+boundariesdetectioncnn/models/model_CNN_SSLM.py
+boundariesdetectioncnn/train/__init__.py
+boundariesdetectioncnn/train/train_MLS.py
+boundariesdetectioncnn/train/train_MLS_4SSLM.py
+boundariesdetectioncnn/train/train_MLS_SSLM.py
+boundariesdetectioncnn/train/train_MLS_SSLM_SSLM.py
+boundariesdetectioncnn/train/train_SSLM.py
+boundariesdetectioncnn/train/train_model.py
+plots/__init__.py
+plots/plot_images.py
+plots/plot_matrix_with_labels.py
+tests/__init__.py
+tests/test_dataloaders.py
+tests/test_loadmodels.py
+tests/test_training.py
+wavaimidiz.egg-info/PKG-INFO
+wavaimidiz.egg-info/SOURCES.txt
+wavaimidiz.egg-info/dependency_links.txt
+wavaimidiz.egg-info/top_level.txt

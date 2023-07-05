@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: wavaimidiz
+Version: 0.0
+Summary: Pytorch music boundary detection
+Home-page: https://github.com/carlosholivan/music-boundaries-detection-cnn
+Author: Carlos Hernandez-Olivan
+Author-email: carloshero@unizar.es
+License: https://github.com/carlosholivan/music-boundaries-detection-cnn/blob/master/LICENSE
+Classifier: Programming Language :: Python :: 3
+License-File: LICENSE
