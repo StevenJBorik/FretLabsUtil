@@ -5,7 +5,7 @@ from boundariesdetectioncnn.models.model_CNN_MLS import CNN_Fusion
 # Load the pre-trained model
 model = CNN_Fusion(output_channels1=32, output_channels2=64)  # Update output_channels
 # Specify the path to the saved state dictionary
-model_path = r"C:\Dev\git\testbuildw\songSectionDetection\MusicBoundariesCNN\pretrained_weights\mel\saved_model_180epochs.bin"
+model_path = r"C:\Users\SBD2RP\OneDrive - MillerKnoll\installs\Desktop\github\FretLabsUtil\songSectionDetection\MusicBoundariesCNN\pretrained_weights\mel\saved_model_180epochs.bin"
 
 # Load the state dictionary into memory
 state_dict = torch.load(model_path, map_location=torch.device("cpu"))
@@ -18,16 +18,39 @@ for key, value in state_dict.items():
     elif 'cnn2' in key:
         key = key.replace('cnn2', 'cnn2.lineal1')
         if 'weight' in key:
-            new_shape = (value.shape[0], value.shape[1] // value.shape[2], 1)  # Determine correct input size
+            new_shape = (
+                value.shape[0],
+                value.shape[1] * value.shape[2],
+                value.shape[3],
+                1
+            ) if len(value.shape) == 4 else (
+                value.shape[0],
+                value.shape[1] * value.shape[2],
+                1,
+                1
+            )  # Determine correct input size
+            print("Shape before reshaping:", value.shape)
             value = value.reshape(new_shape)  # Reshape weight to match new size
-        elif 'bias' in key:
-            value = value.squeeze()  # Remove extra dimension from bias
+
+        key = key.replace('cnn2', 'cnn2.lineal1')
+        if 'weight' in key:
+            new_shape = (
+                value.shape[0],
+                value.shape[1] * value.shape[2],
+                value.shape[3],
+                1
+            )  # Determine correct input size
+            print("Shape before reshaping:", value.shape)
+            value = value.reshape(new_shape)  # Reshape weight to match new size
+    elif 'bias' in key:
+        value = value.squeeze()  # Remove extra dimension from bias
+
     new_state_dict[key] = value
 
 model.load_state_dict(new_state_dict)
 model.eval()
 
-audio_path = r"C:\Dev\git\testbuildw\songSectionDetection\nir.mp3"
+audio_path = r"C:\Users\SBD2RP\OneDrive - MillerKnoll\installs\Desktop\github\FretLabsUtil\songSectionDetection\nir.mp3"
 
 waveform, sample_rate = torchaudio.load(audio_path)
 spectrogram = torchaudio.transforms.Spectrogram()(waveform)

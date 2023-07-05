@@ -1,36 +1,31 @@
 import numpy as np
-import librosa
-import torch
-from MusicBoundariesCNN.boundariesdetectioncnn import configs 
+from pydub import AudioSegment
+import ruptures as rpt
 
-# Load the trained model
-model = configs.load_model('mel')
+# Load the audio file
+audio_path = r'C:\Users\SBD2RP\OneDrive - MillerKnoll\installs\Desktop\github\FretLabsUtil\songSectionDetection\nir.mp3'
+audio = AudioSegment.from_file(audio_path)
 
-# Preprocess the audio to obtain the spectrogram representation
-audio_path = 'C:/Dev/git/testbuildw/songSectionDetection/nir.mp3'  # Path to the audio file
-audio, sr = librosa.load(audio_path, sr=22050)  # Load the audio file
+# Convert audio to mono and extract the raw data
+audio_mono = audio.set_channels(1)
+data = np.array(audio_mono.get_array_of_samples())
 
-# Apply audio preprocessing using librosa
-spectrogram = librosa.feature.melspectrogram(y=audio, sr=sr)
+# Set the desired time window for each section in seconds
+window_size = 20  # Adjust this value based on your preference
 
-# Convert the spectrogram to a PyTorch tensor
-spectrogram_tensor = torch.from_numpy(spectrogram[np.newaxis, np.newaxis, :, :]).float()
+# Convert window size from seconds to number of samples
+window_size_samples = int(window_size * audio.frame_rate)
 
-# Pass the spectrogram through the model to obtain the predicted section boundaries
-with torch.no_grad():
-    predicted_boundaries = model(spectrogram_tensor)
-    predicted_boundaries = predicted_boundaries.squeeze().numpy()
+# Perform segmentation using Ruptures
+model = "rbf"  # Change the model based on your preference
+algo = rpt.Pelt(model=model).fit(data)
+result = algo.predict(pen=10)
 
-# Postprocess the predicted boundaries (You may need to customize this part)
-section_boundaries = predicted_boundaries
-
-# Print the section boundaries
-for section in section_boundaries:
-    start_time = section[0]  # Start time of the section in seconds
-    end_time = section[1]  # End time of the section in seconds
+# Print the sections of the song
+for i in range(len(result)):
+    start_time = result[i] * window_size
+    end_time = (result[i] + 1) * window_size
     print(f"Section: {start_time:.2f} - {end_time:.2f} seconds")
-
-
 
 # from __future__ import print_function
 # import msaf
