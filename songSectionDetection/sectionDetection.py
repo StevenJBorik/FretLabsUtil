@@ -1,30 +1,43 @@
+import os
 import numpy as np
-from pydub import AudioSegment
-import ruptures as rpt
+import librosa
+from sf_segmenter.segmenter import Segmenter
+
+# Set the path to the ffmpeg executable
+ffmpeg_path = r'C:\ffmpeg\bin'  # Replace with the directory containing ffmpeg.exe
+
+# Add the ffmpeg directory to the system's PATH
+os.environ['PATH'] += os.pathsep + ffmpeg_path
 
 # Load the audio file
-audio_path = r'C:\Users\SBD2RP\OneDrive - MillerKnoll\installs\Desktop\github\FretLabsUtil\songSectionDetection\nir.mp3'
-audio = AudioSegment.from_file(audio_path)
+audio_path = r'C:\Dev\git\testbuildw\songSectionDetection\nir.wav'
+print(f"Audio path: {audio_path}")
 
-# Convert audio to mono and extract the raw data
-audio_mono = audio.set_channels(1)
-data = np.array(audio_mono.get_array_of_samples())
+# Create a segmenter object
+segmenter = Segmenter()
 
-# Set the desired time window for each section in seconds
-window_size = 20  # Adjust this value based on your preference
+# Perform song section detection
+boundaries = segmenter.proc_audio(audio_path)
 
-# Convert window size from seconds to number of samples
-window_size_samples = int(window_size * audio.frame_rate)
+# Remove the last boundary
+boundaries = boundaries[:-1]
 
-# Perform segmentation using Ruptures
-model = "rbf"  # Change the model based on your preference
-algo = rpt.Pelt(model=model).fit(data)
-result = algo.predict(pen=10)
+# Load the audio using librosa
+audio, sr = librosa.load(audio_path)
+
+# Convert boundaries tuple to NumPy array
+boundaries = np.array(boundaries)
+
+# Calculate the section durations
+section_durations = np.diff(boundaries[:, 0])
+
+# Calculate the section start times
+section_start_times = boundaries[:-1, 0] / sr
 
 # Print the sections of the song
-for i in range(len(result)):
-    start_time = result[i] * window_size
-    end_time = (result[i] + 1) * window_size
+for i in range(len(section_durations)):
+    start_time = section_start_times[i]
+    end_time = start_time + section_durations[i]
     print(f"Section: {start_time:.2f} - {end_time:.2f} seconds")
 
 # from __future__ import print_function
